@@ -1,5 +1,6 @@
 # Mini-Data Analysis (Milestone 1)
 ### Author: Gopal Khanal
+#### 2023-10-5
 _The purpose of independent Mini-Data Analysis Project is to gain familiarity with data manipulation and visulation and basic analysis of research questions._
 
 ### This repository contains following documents as a part of Mini-Data Analysis.
