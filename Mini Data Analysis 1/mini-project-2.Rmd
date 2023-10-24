@@ -1,0 +1,1089 @@
+---
+title: "Mini Data Analysis Milestone 2"
+author: "Gopal Khanal"
+date: "2023-10-22"
+output: html_document
+---
+
+*To complete this milestone, you can either edit [this `.rmd` file](https://raw.githubusercontent.com/UBC-STAT/stat545.stat.ubc.ca/master/content/mini-project/mini-project-2.Rmd) directly. Fill in the sections that are commented out with `<!--- start your work here--->`. When you are done, make sure to knit to an `.md` file by changing the output in the YAML header to `github_document`, before submitting a tagged release on canvas.*
+
+# Mini Data Analysis 2
+
+##Background information
+
+In Milestone 1, you explored your data. and came up with research questions. This time, we will finish up our mini data analysis and obtain results for your data by: 
+
+- Making summary tables and graphs 
+- Manipulating special data types in R: factors and/or dates and times.
+-   Fitting a model object to your data, and extract a result.
+-   Reading and writing data as separate files.
+
+We will also explore more in depth the concept of *tidy data.* 
+
+**NOTE**: The main purpose of the mini data analysis is to integrate what you learn in class in an analysis. Although each milestone provides a framework for you to conduct your analysis, it's possible that you might find the instructions too rigid for your data set. If this is the case, you may deviate from the instructions -- just make sure you're demonstrating a wide range of tools and techniques taught in this class.
+
+## Instructions
+
+**To complete this milestone**, edit [this very `.Rmd` file](https://raw.githubusercontent.com/UBC-STAT/stat545.stat.ubc.ca/master/content/mini-project/mini-project-2.Rmd) directly. Fill in the sections that are tagged with `<!--- start your work here--->`.
+
+**To submit this milestone**, make sure to knit this `.Rmd` file to an `.md` file by changing the YAML output settings from `output: html_document` to `output: github_document`. Commit and push all of your work to your mini-analysis GitHub repository, and tag a release on GitHub. Then, submit a link to your tagged release on canvas.
+
+**Points**: This milestone is worth 50 points: 45 for your analysis, and 5 for overall reproducibility, cleanliness, and coherence of the Github submission. 
+
+**Research Questions**: In Milestone 1, you chose two research questions to focus on. Wherever realistic, your work in this milestone should relate to these research questions whenever we ask for justification behind your work. In the case that some tasks in this milestone don't align well with one of your research questions, feel free to discuss your results in the context of a different research question.
+
+## Learning Objectives
+
+By the end of this milestone, you should:
+
+-   Understand what *tidy* data is, and how to create it using `tidyr`.
+-   Generate a reproducible and clear report using R Markdown.
+-   Manipulating special data types in R: factors and/or dates and times.
+-   Fitting a model object to your data, and extract a result.
+-   Reading and writing data as separate files.
+
+# Setup: Installing packages and loading libraries
+
+I'll be using following library and packages for this analysis
+
+```{r, message = FALSE}
+library(datateachr) # <- This  contains that the data flow sample I'm using
+library(tidyverse)
+library(here)
+library(broom)
+library(readr)
+```
+
+# Task 1: Process and summarize your data 
+
+From milestone 1, you should have an idea of the basic structure of your dataset (e.g. number of rows and columns, class types, etc.). Here, we will start investigating your data more in-depth using various data manipulation functions. 
+
+## 1.1 Re-writing the research questions mentioned in Milinestone 1 (1 point) 
+
+First, write out the 4 research questions you defined in milestone 1 were. This will guide your work through milestone 2:
+
+<!-------------------------- Start your work below ---------------------------->
+
+Q1: Whether there there is statistically significant trend in both extreme minimum, and extreme maximum flow (m3/sec) over the years? 
+
+Description: I'll use linear regression model to see annual trends. I'll check the significance of beta coefficient. I'll also try and explore non-parametric Mann-Kendall and Sen's methods tests to determine whether there is a significant positive or negative trend in flow.
+
+Q2: Compare flow pattern among decades:whether there are some decades (say 1970-1980) with unusual extreme min and max flow?
+
+Description: Which years had more than average of extreme maximum flow? Are extreme flows (both min and max) after 2000 different than those before 2000? If there has been consistent increase in extreme max flow after 2000, this MAY be signature of increase in extreme rainfall after 2000 or MAY be of extreme runoff in the rivers due to deforestation in the catchment area.
+
+Q3: Are flow patterns consistent across years with regards to months? Or has there been any shift in months which has highest extreme maximum flow or min flow?
+
+Q4: Which months have extreme min and extreme max flow? Whether particular months have unusually high extreme max flow over the years ?
+
+
+
+<!----------------------------------------------------------------------------->
+
+Here, we will investigate your data using various data manipulation and graphing functions.
+
+## 1.2 Summarizing and visualizing the data (8 points)
+
+Now, for each of your four research questions, choose one task from options 1-4 (summarizing), and one other task from 4-8 (graphing). You should have 2 tasks done for each research question (8 total). Make sure it makes sense to do them! (e.g. don't use a numerical variables for a task that needs a categorical variable.). Comment on why each task helps (or doesn't!) answer the corresponding research question.
+
+Ensure that the output of each operation is printed!
+
+Also make sure that you're using dplyr and ggplot2 rather than base R. Outside of this project, you may find that you prefer using base R functions for certain tasks, and that's just fine! But part of this project is for you to practice the tools we learned in class, which is dplyr and ggplot2.
+
+**Summarizing:**
+
+1.  Compute the *range*, *mean*, and *two other summary statistics* of **one numerical variable** across the groups of **one categorical variable** from your data.
+2.  Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!
+3.  Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! *An example: age in years into "child, teen, adult, senior".*
+4. Compute the proportion and counts in each category of one categorical variable across the groups of another categorical variable from your data. Do not use the function `table()`!
+
+**Graphing:**
+
+6. Create a graph of your choosing, make one of the axes logarithmic, and format the axes labels so that they are "pretty" or easier to read.
+7. Make a graph where it makes sense to customize the alpha transparency.
+
+Using variables and/or tables you made in one of the "Summarizing" tasks: 
+
+8. Create a graph that has at least two geom layers. 
+9. Create 3 histograms, with each histogram having different sized bins. Pick the "best" one and explain why it is the best.
+
+Make sure it's clear what research question you are doing each operation for!
+
+<!------------------------- Start your work below ----------------------------->
+###Qestion wise summarizing and graphing
+
+####Question1: Whether there there is statistically significant trend in both extreme minimum, and extreme maximum flow (m3/sec) over the years? 
+
+**Selected summary question***
+1.  Compute the *range*, *mean*, and *two other summary statistics* of **one numerical variable** across the groups of **one categorical variable** from your data.
+
+Description: In the flow sample data, one of the continuous variable is **flow** (m3/sec) and the categorical variable is flow type or **extreme_type** (extreme minimum, extreme maximum)
+
+The descriptive summary doesn't answer the Q1 explicitly,  but it does provide important information about the summary statistics of the variables, which I'll be using in the modeling section.
+
+The summary statistics shows that the mean flow in extreme_maximum level is 212.07 m3/sec whereas it is 6.27 m3/sec in extreme_minimum level. This difference is likely because **extreme_type** represent such extreme level. 
+
+The more interesting aspect is that **flow** is also is highly variable. In the **extreme_maximum level**, the range (107 m3/sec-466 m3/sec) whereas it is 3.62 m3/sec- 8.44 m3/sec in **extreme_minimum level**. The extreme minimum is less variable as shown by the coefficient of variation (15.37), which is less than for extreme_maximum (29.08).
+
+```{r}
+# Calculate summary statistics of **flow** (continuous variable) across the flow **extreme_type**.
+
+summary_stat <- flow_sample %>%
+  group_by(extreme_type) %>%
+  summarize(
+    mean = mean(flow, na.rm = TRUE), 
+    range = max(flow, na.rm=TRUE)-min(flow, na.rm=TRUE), 
+    sd = sd(flow, na.rm=TRUE),
+    min = min(flow, na.rm=TRUE), 
+    max = max(flow, na.rm=TRUE),
+    cv <- sd(flow, na.rm=T) / mean(flow, na.rm=T) * 100)
+print(summary_stat)
+
+
+```
+
+**Selected graphing question***
+8. Create a graph that has at least two geom layers
+
+The **flow_sample** data contains yearly **flow (m3/sec)** for *extreme_maximum* and *extreme_minimum* category for the **year** from *1909* to *2018*. So each each **year** has two observations (extreme_maximum, extreme_minimum). 
+
+I'm plotting the **flow (m3/sec)** in relation to **year**.
+
+In the "*milestone 1** I found that the magnitude of **flow** can be extremely different depending upon the flow category **extreme_type** ( extreme minimum vs extreme maximum), and it is not prudent to compare over time flow variation between extreme_maximum, and extreme_minimum categories, because it will be obviously different. 
+
+Instead, it's better to filter and assess whether any one category of extreme **flow** is increasing or decreasing over the time period **year**.
+
+Thus, I subset the data *flow_sample1A* which is flow data for **extreme_maximum** category, and *flow_sample1B* for **extreme_minimum** category.
+
+This graphing helps answer the Q1, but I'll do detail analyzing in the modeling section.
+
+Here, I explored visualization of extreme maximum, and extreme minimum flow type.
+
+First, I explored the relationship between **flow** and **year** in the *extreme_maximum* category. There appears to be *decreasing trend* over the years.
+
+Second, I explored the relationship between **flow** and **year** in the extreme_minimum category. There appears to be *increasing trend* over the years.
+
+**Important consideration**
+
+While the flow in extreme_maximum category appears to be decreasing, and increasing in the extreme_minimum category over the years , it would be interesting to explore how above_average and below_average flows in both categories are changing over the years.
+
+Thus, I created a new categorical variable called **flow_pattern**, which has two levels- **above_mean** for the years which has higher the average flow of 109 years, and **below_mean** for the years which has below the average flow of 109 years.  I also created a new continuous variable named **flow_change** which shows magnitude of difference (m3/sec) to average flow of 109 years, and it could be positive, negative and zero depending upon to what extent the flow of that year is different than average flow of all years.
+
+**flow_sample1A** is new dataset for extreme_maximum category
+
+**flow_sample1B** is new dataset for extreme_minimum category
+
+
+I explored how the below *above_mean* and *below_mean* flow of both extreme_maximum and extreme_minimum categories changing over the years.
+
+
+Interesting finding: While the overall flow showed decreasing trend over the years in the extreme_maximum category (plot_max), the close examination of flow variability shows that above_mean flow is increasing over the years, whereas the below_mean flow is decreasing over the years (plot1A). The increasing pattern in above_mean flow perhaps indicate that the years with higher than average flow in extreme_maximum category are increasing, which is alarming given the climate change impacts.
+
+In contrast, in extreme_minimum flow category, both the overall trend, and above_mean and below_mean flows are increasing over the years, albeit at small rate (plot_min, and plot1B)
+
+I plotted scatter plot and used *lm* smooth line.
+
+
+
+
+```{r}
+
+## plot 1 is recap of Milestone 1; flow variation over the years
+## The difference is obvious based on extreme_type
+
+plot_all<-flow_sample %>%
+   ggplot(aes(x=year, y=flow)) +
+   geom_point(aes(color = extreme_type))
+print (plot_all)
+
+
+## Flow variation over the years for extreme_maximum category
+## There appears to be decreasing trend in yearly maximum flow over the years
+## But, wait! There is hidden pattern, to be explored in modeling section
+plot_max<-flow_sample %>% filter(extreme_type=="maximum") %>%
+  ggplot(aes(year, flow)) +
+  geom_point() +
+  geom_smooth (method = "lm", se=FALSE)
+
+## Flow variation over the years for extreme_minimum category
+## There appears to be increasing trend in yearly maximum flow over the years
+## But, wait! There is hidden pattern, to be explored in modeling section
+plot_min<-flow_sample %>% filter(extreme_type=="minimum") %>%
+  ggplot(aes(year, flow)) +
+  geom_point() +
+  geom_smooth (method = "lm", se=FALSE)
+
+# Create two new variables flow2 to quantify how much higher or lower is the flow in comparison to average flow
+# Create a variable flow pattern to quantify whether flow is above or below the average flow
+
+flow_sample1A <-flow_sample%>%
+  filter(extreme_type =="maximum") %>%
+  group_by(station_id)%>%
+  arrange(year) %>%
+  mutate(flow2 = flow-mean(flow), flow_pattern = factor(ifelse(flow > mean(flow), "above_mean", "below_mean"), levels=c("above_mean", "below_mean")))
+
+head(flow_sample1A)
+
+## plot scatterplot of flow in relation to year and newly created variable flow pattern
+
+plot1A<-flow_sample1A %>%
+  ggplot(aes(x=year, y=flow, col=flow_pattern), rm.na=TRUE) +
+  geom_point(position = "jitter", size=2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  xlab("Year") +
+  ylab("Yearly extreme flow (m^3/sec)")
+
+plot1A
+
+
+## Extreme minimum level
+
+flow_sample1B <-flow_sample%>%
+  filter(!is.na(flow)) %>%
+  filter(extreme_type =="minimum") %>%
+  group_by(station_id)%>%
+  arrange(year) %>%
+  mutate(flow2 = flow-mean(flow, na.rm=T), flow_pattern = factor(ifelse(flow > mean(flow, na.rm=T), "above_mean", "below_mean"), levels= c("above_mean", "below_mean")))
+
+
+head(flow_sample1B)
+
+## plot scatter plot of flow in relation to year and newly created variable flow pattern
+
+plot1B<-flow_sample1B %>%
+  ggplot(aes(x=year, y=flow, col=flow_pattern), rm.na=T) +
+  geom_point(position = "jitter", size=2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  xlab("Year") +
+  ylab("Yearly extreme flow (m^3/sec)")
+
+plot1B
+```
+
+####Question2:  Q2: Compare flow pattern among decades:whether there are some decades (say 1970-1980) with unusual extreme min and max flow?
+
+Description: Which years had more than average of extreme maximum flow? Are extreme flows (both min and max) after 2000 different than those before 2000? If there has been consistent increase in extreme max flow after 2000, this MAY be signature of increase in extreme rainfall after 2000 or MAY be of extreme runoff in the rivers due to deforestation in the catchment area.
+
+**Selected summary question***
+  Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! *An example: age in years into "child, teen, adult, senior".*
+  
+In the previous **data analysis 1**, I plotted to assess whether there has been any specific pattern over 109 years. I simply plotted **flow** vs **year** without checking the whether there are any decadal  flow patterns.  Climate change may cause decadal fluctuations in flow. Thus, it makes sense to make a **year** as a categorical variable. I created a new categorical variable **decade**.  There are total 109 years which represents nearly 11 decades.
+
+The new dataset is named as **flow_sample2_max** for *extreme_maximum* category
+
+The new dataset is named as **flow_sample2_min** for *extreme_minimum* category
+
+
+Creating new categorical variable partly help answer my Q2 because it does provide basis for further statistical examination. 
+For both extreme_maximum and extreme_minimum category, there appears to be decadal fluctuations in flow as shown by boxplots (plot2A, and plot 2B). In particular, for extreme_minimum category, there seems to increasing pattern in decadal pattern (fig. plot2A) whereas there is decreasing trend in extreme_maximum category (fig. plot2A. But important thing to note here that there is substantial uncertainty in the 11th decade of extreme_maximum category where there is one outlier with flow (466 m3/sec) which is unusually higher than other observations in the same decade.
+
+
+ For
+ examining Q2.  To answer my question Q2, I created a boxplot
+```{r}
+
+# Create new categorical variable of year
+# 11 levels from Decade 1 to Decade 11
+# Plot decade wise flow over the 11 decades
+
+flow_sample2_max <- flow_sample1A %>%
+  mutate(decade = case_when(
+     year < 2020 & year >=2010~ "D11",
+     year < 2010 & year>= 2000~ "D10",
+     year < 2000 & year>= 1990 ~ "D9",
+     year <1990 & year >=1980 ~"D8",
+     year <1980 & year >=1970 ~ "D7",
+     year < 1970 & year>=1960 ~"D6",
+     year < 1960 & year>=1950 ~ "D5",
+     year< 1950 & year >=1940 ~ "D4",
+     year< 1940 & year>=1930 ~"D3",
+     year<1930 & year >=1920 ~"D2",
+     year<1920 & year >= 1909 ~ "D1"
+  )) 
+
+
+# Create flow variation across decades
+
+plot2A<-ggplot(flow_sample2_max, aes(x= reorder(decade, year), y=flow)) +
+  geom_boxplot(outlier.shape = NA) + geom_jitter(width = 0.2) +
+  xlab("decades in order after 1909") +
+  ylab(" River flow (m^3/sec)") +
+  labs(title = "Extreme_maximum decadal flow pattern")
+  
+plot2A
+
+
+## New data for extreme_minimum
+flow_sample2_min <- flow_sample1B %>%
+  mutate(decade = case_when(
+     year < 2020 & year >=2010~ "D11",
+     year < 2010 & year>= 2000~ "D10",
+     year < 2000 & year>= 1990 ~ "D9",
+     year <1990 & year >=1980 ~"D8",
+     year <1980 & year >=1970 ~ "D7",
+     year < 1970 & year>=1960 ~"D6",
+     year < 1960 & year>=1950 ~ "D5",
+     year< 1950 & year >=1940 ~ "D4",
+     year< 1940 & year>=1930 ~"D3",
+     year<1930 & year >=1920 ~"D2",
+     year<1920 & year >= 1909 ~ "D1"
+  )) 
+
+
+# Create flow variation across decades
+
+plot2B<-ggplot(flow_sample2_min, aes(x= reorder(decade, year), y=flow)) +
+  geom_boxplot(outlier.shape = NA) + geom_jitter(width = 0.2) +
+  xlab("decades in order after 1909") +
+  ylab(" River flow (m^3/sec)") +
+  labs(title = "Extreme_minimum decadal flow pattern")
+plot2B
+  
+```
+
+
+**Selected graphing question***
+
+9. Create 3 histograms, with each histogram having different sized bins. Pick the "best" one and explain why it is the best.
+
+Because histogram comparison doesn't make much sense to answer my Q2 decade wise pattern analysis and my other questions from Q1-Q4, I chose to check the frequency of flow (numeric variable). This is to assess whether particular flow magnitude is repeated over years or has high frequency of occurence.
+
+In the flow sample dataset, **flow (m3/sec)** is the only sensible variable to plot the frequency of distribution. The variable **month** doesn't have much repeated observations across all 12 months (limited to only different 6 months), and years from 1909-2018 has just two observation per **year**.
+
+Therefore I chose the flow (continuous variable) to plot histograms with different bin size.
+
+
+Because the flow variable is numeric with repeated values have limited difference in magnitude, I think the small bin size (histogram no 1 with 10 unit bin size) would be better than the histogram 2 with 30 bin size and histogram 3 with 50 bin size. 
+
+For this task, I used **flow_sample1A** data because there is good amount of variability in the continuous variable **flow** in extreme_maxmimum category (range:107 m3/sec-466 m3/sec) whereas the exteme_minimum data is too less variable to compare effect of bin width on visualization (range: 3.62 m3/sec- 8.44 m3/sec)
+
+Because the *flow"** ranges from 07 m3/sec to 466 m3/sec, I created three histograms of different bin sizes (10,30, 100 ). These histograms shows the frequency of different magnitudes of flow that occured in 109 years from 1909-2018.
+
+Out of three bin sizes, I found the bin size of 20 is most appealing as well as informative to visualize the frequency of flow.  In 100 bin width, much of the information is lost, because the region of flow between 150m3/sec-250 m3/sec is not well represented, whereas using too small bin size of 5 will show much clutter and doesn't look intuitive enough to visualize and extract information. The bin width of 20 looks a good compromise.
+
+**Histogram 1** of bin size 5
+
+```{r}
+# Histogram 1 with bin width 5
+ histogram1<-ggplot(flow_sample1A,aes(flow)) +
+         geom_histogram(alpha=1, fill= "pink", color= "blue", binwidth = 5) +
+        labs(title = "Histogram for flow", x = "Flow (m3/sec)", y = "Frequency") +
+    theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+  print(histogram1)
+
+```
+
+
+**Histogram 2** of bin size 20
+
+```{r}
+
+# Histogram 1 with bin width 20
+  
+  histogram2<-ggplot(flow_sample1A,aes(flow)) +
+    geom_histogram(alpha=0.8, fill= "pink", color= "blue", binwidth = 20) +
+    labs(title = "Histogram for flow", x = "Flow (m3/sec)", y = "Frequency") +
+    theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+ print(histogram2)
+```
+
+**Histogram 3** of bin size 100
+
+```{r}
+
+ # Histogram 3 with bin width 100
+  
+  histogram3<-ggplot(flow_sample1A,aes(flow)) +
+    geom_histogram(alpha=0.8, fill= "pink", color= "blue", binwidth = 100) +
+    labs(title = "Histogram for flow", x = "Flow (m3/sec)", y = "Frequency") +
+    theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+  
+  print(histogram3)
+```
+
+
+####Question3: Are flow patterns consistent across years with regards to months? Or has there been any shift in months which has highest extreme maximum flow or min flow? 
+
+**Selected summary question***
+1. Compute the number of observations for at least one of your categorical variables. Do not use the function `table()`!
+
+In my original dataset, there was only one categorical variable (extreme_type) and there were two levels (maximum, minimum) and both levels had same 109 observations. So it is not appealing to explore the number of observations in the **year**.
+
+Therefore I decided to work with new categorical variable **flow pattern**, which has two level (above_mean and below_mean) corresponding to whether the extreme_maximumyearly flow in the river is higher than the average flow of 109 years or below the average of 109 years.
+
+I used **flow_sample1A** and **flow_sample1B** data.
+
+**Interesting finding**: 
+
+In both extreme_max and extreme_min categories,there are fewer years with above_mean flow than below_mean flow. In extreme_max, 47 years had the above_mean flow  and 62 years ha below_min flow, and in the extreme_min category, 49 years had the above_mean flow  and 58 years had below_min flow. From this data, it can be inferred that 
+there are some years with unusually high or low flow that is driving the annual fluctuations in flow over the years. For example, the year 2013 had unusually high flow in extreme_max category (466 m3/sec), and 1932 had low  flow in extreme_min category (3.62 m3/sec). But important thing to note here is that **flow (m3/sec)** less variable across years in extreme_min category than extreme_max category as indicated by their CV.
+
+It would be interesting to explore with which years are those that have above average flows, which I will explore in modeling section
+
+
+```{r}
+
+## No of years (n) where flow is above_mean and below_mean in extreme_max category
+No.of.obs_max<- flow_sample1A %>%
+  filter(!is.na(flow_pattern)) %>%
+  count(flow_pattern) %>%
+  arrange(desc(n))
+print(No.of.obs_max)
+
+
+## No of years (n) where flow is above_mean and below_mean in extreme_min category
+No.of.obs_min<- flow_sample1B %>%
+  filter(!is.na(flow_pattern)) %>%
+  count(flow_pattern) %>%
+  arrange(desc(n))
+print(No.of.obs_min)
+
+```
+
+**Selected graphing question***
+8. Create a graph of your choosing, make one of the axes logarithmic, and format the axes labels so that they are "pretty" or easier to read.
+
+This graphing question does not help answer anyone of my questions Q1-Q4, but it does help in better visualization of the numeric variable of flow sample data.
+
+In flow sample dataset of extreme_max category **flow_sample1A**, the main numerical variable (flow) doesn't have extreme range. This means doing logartihmic transformation of one axis and plot it on log scale won't be very useful. But for a practice, I've plotted log10 of flow in the y-axis vs year in the x-axis.
+
+
+```{r}
+
+plot_log <- ggplot(data=flow_sample1A, aes(x=year, y=flow)) +
+  geom_point() +
+  scale_y_log10("flow (m3/sec") +
+  theme_minimal()+
+  xlab("Year") +
+  labs(title="Flow variation across 109 years") +
+    theme(plot.title = element_text(hjust = 0.5))
+
+print(plot_log)
+
+```
+
+
+####Question4: Q4: Which months have extreme min and extreme max flow? Whether particular months have unusually high extreme max flow over the years ? 
+
+**Selected summary question***
+1.   Compute the proportion and counts in each category of one categorical variable across the groups of another categorical variable from your data. Do not use the function `table()`!
+
+I calculated whether particular months had more number of years with higher than overall average flow for both category of extreme_types.
+
+The results shows that for extreme_max category, the month 6 (June) has the highest number of years (40 years) with above_mean flows, and same month (June) has highest number of years with below_mean flows.
+This is surprising because the month **June** has both highest and lowest flows in extreme_max category indicating that this month is highly variable in flow.
+
+In extreme_min category, the number of years with above_mean and below_mean flow are less variable than in extreme_max category. The number of years with above_mean and below_mean flow are more or less evenly distributed in the Month 2 and 3 (Feb & March).
+
+```{r}
+
+## Organizing months for extreme_max category with flows that are above the mean and below the mean flow
+months_max <-flow_sample2_max %>%
+  group_by(month, flow_pattern) %>%
+  summarize( 
+    count=n(),
+    proportions = n()/ nrow(flow_sample2_max)
+  ) %>%
+  arrange(desc(count))
+
+print(months_max)
+
+## Organizing the months for extreme_min with flows that are above the mean and below the mean flow
+months_min <-flow_sample2_min %>%
+  group_by(month, flow_pattern) %>%
+  summarize( 
+    count=n(),
+    proportions = n()/ nrow(flow_sample2_min)
+  ) %>%
+  arrange(desc(count))
+
+print(months_min)
+
+
+```
+
+**Selected graphing question***
+8. 7. Make a graph where it makes sense to customize the alpha transparency.
+
+To align with my Q4 (figuring out months that have extreme min and extreme max flow), I created a scatter plot for both extreme_max (fig. plot4A), and extreme_min category (fig. plot4B). Here, use of alpha transparency does not make much sense because the function color can help distinguish the pattern. But it helped my answer of Q4.
+
+This graphing shows that above_mean flows in the extreme_max category are largely concentrated in the month 6 (June) whereas both above_mean and below_mean flows for extreme_min category are more or less even distributed across Month 2 and 3 (Feb and March). 
+
+
+```{r}
+## Create scatter plot for flow vs months for extreme_max
+
+plot4A<-ggplot(flow_sample2_max, aes(month, flow, color=flow_pattern)) +
+  geom_point() +
+theme_minimal()+
+  xlab("Month") +
+  ylab("Flow")+
+  labs(title="Month wise flow pattern for extreme_max flow")
+print(plot4A)
+
+## Create scatter plot for flow vs months for extreme_min
+
+plot4B<-ggplot(flow_sample2_min, aes(month, flow, color=flow_pattern)) +
+  geom_point() +
+theme_minimal()+
+  xlab("Month") +
+  ylab("Flow")+
+  labs(title="Month wise flow pattern for extreme_min flow")
+print(plot4B)
+
+```
+
+To make sense of alpha transparency, I created another plot where created a density plot for **flow** and customized the alpha transparency so that visualization of region where average flow between two levels of flow_patterns(above_mean and below_mean) overlaps.
+
+The results (plot) shows that flow between 170m3/sec - 240m3/sec overlaps, and that region corresponds to average flows in both levels.
+```{r}
+
+flow_sample2_max %>% #select data set
+  ggplot(aes(x=flow))+ #select flow as the continuous variable on the x-axis
+  geom_density(aes(fill=flow_pattern),na.rm=TRUE,alpha=0.5)+ #colour according to the value of flow_pattern (above_mean/below_mean)
+  guides(fill=guide_legend(title="Flow_pattern"))+ #specify colour legend title
+  xlab("Flow (m3/sec)")+
+  ylab("Density")+
+  theme_minimal()
+```
+
+<!----------------------------------------------------------------------------->
+
+## 1.3 Re-considering the research questions (2 points)
+
+Based on the operations that you've completed, how much closer are you to answering your research questions? Think about what aspects of your research questions remain unclear. Can your research questions be refined, now that you've investigated your data a bit more? Which research questions are yielding interesting results?
+
+<!------------------------- Write your answer here ---------------------------->
+
+I think the the summarizing and graphing questions partially helped answer my questions, because the main findings of my questions Q1-Q4 will be inconclusive without statistical tests.
+
+Below, I summarize progress and things that remained unclear.
+
+**Q1: Whether there there is statistically significant trend in both extreme minimum, and extreme maximum flow (m3/sec) over the years?**
+ 
+Based on graphing results, it appears that there are trends in flow over the years, with extreme_maximum flow slightly decreasing over the years, and extreme_minimum flow slightly increasing over the years. The closer examination of above_mean or below_mean flow patterns revealed that in the extreme_max categories, the above_mean flows are increasing and below_mean flow are decreasing whereas both above_mean and below_mean flows are consistently increasing over the years in the extreme_min category.
+
+I think statistical tests need to done to confirm whether these patterns are statistically significant.
+
+
+**Q2: Compare flow pattern among decades:whether there are some decades (say 1970-1980) with unusual extreme min and max flow? Which years had more than average of extreme maximum flow?**
+
+I compared the whether flow patterns in both extreme_max and extreme_min flow categories are associated with decades (decade 1 to decade 11). Overall, there is a lot of inter-decadal heterogeneity in flow in both categories, and thus it is difficult to ascertain whether there is statistically significant decadal patterns in the flow without formal statistical test. But one thing is noticeable- it is that there flows in extreme_max categories are highly variable with lots of within decade variation than extreme_min categories as shown in figures plot2A and plot2B.
+
+I think next step would be do a statistical test (e.g. ANOVA) to assess whether mean flow across decades are statistically different.
+
+**Q3: Are flow patterns consistent across years with regards to months? Or has there been any shift in months which has highest extreme maximum flow or min flow?**
+
+
+This question was not properly answered by above tasks. While the monthly flow pattern across years couldn't be ascertained properly, I did try to check how many years out of total 109 years, had above_mean and below_mean flows for both categories (extreme_max, and extreme_min).
+
+In both extreme_max and extreme_min categories,there are fewer years with above_mean flow than below_mean flow. In extreme_max, 47 years had the above_mean flow  and 62 years ha below_min flow, and in the extreme_min category, 49 years had the above_mean flow  and 58 years had below_min flow.
+
+From this data, it can be inferred that there are some years with unusually high or low flow that is driving the annual fluctuations in flow over the years. For example, the year 2013 had unusually high flow in extreme_max category (466 m3/sec), and 1932 had low  flow in extreme_min category (3.62 m3/sec). But important thing to note here is that **flow (m3/sec)** less variable across years in extreme_min category than extreme_max category as indicated by their CV.
+
+Now, it would be interesting to explore further to understand whether there has there been any shift in months(e.g., June vs July) with regards to extreme_maximum and extreme_minimum flow?
+
+**Q4: Which months have extreme min and extreme max flow? Whether particular months have unusually high extreme max flow over the years ?**
+
+This question was partly answered by above tasks. 
+
+I calculated whether particular months had more number of years with higher than overall average flow for both category of extreme_types.
+
+The results shows that for *extreme_max* category, the month 6 (June) has the highest number of years (40 years) with above_mean flows, and same month (June) has highest number of years with below_mean flows.
+This is surprising because the month **June** has both highest and lowest flows in extreme_max category indicating that this month is highly variable in flow. In *extreme_min* category, the number of years with above_mean and below_mean flow are less variable than in extreme_max category. The number of years with above_mean and below_mean flow are more or less evenly distributed in the Month 2 and 3 (Feb & March).
+
+I created scatter plots for both extreme_max (fig. plot4A), and extreme_min category (fig. plot4B) to visualize the patterns. Overall, it looks like that above_mean flows in the extreme_max category are largely concentrated in the month 6 (June) whereas both above_mean and below_mean flows for extreme_min category are more or less even distributed across Month 2 and 3 (Feb and March).
+
+Now, it would be interesting to explore further understand why the month June so much variable in respect to above_mean and below_mean flows.
+
+
+
+<!----------------------------------------------------------------------------->
+
+# Task 2: Tidy your data 
+
+In this task, we will do several exercises to reshape our data. The goal here is to understand how to do this reshaping with the `tidyr` package.
+
+A reminder of the definition of *tidy* data:
+
+-   Each row is an **observation**
+-   Each column is a **variable**
+-   Each cell is a **value**
+
+## 2.1 Check whether data is Tidy or Untidy. (2 points)
+
+Based on the definition above, can you identify if your data is tidy or untidy? Go through all your columns, or if you have \>8 variables, just pick 8, and explain whether the data is untidy or tidy.
+
+
+Overall, my **flow_sample** data looks tidy for my analysis, but again depending on purpose of its analysis, it can be untidy data as well because there missing values for the year 1909 and 1910, and there are lots of missing values for the variable named **sym**.
+
+Overall, the data is tidy because each rows contains one single observation about flow of particular station ID in the river, and associated features (year of data collection, whether the measurement was extreme_max or extreme_min, day, and month of measurement).This means the data has each row as an observation, each column as a variable, and each cell as a value.
+
+
+<!--------------------------- Start your work below --------------------------->
+* Based on the below investigation, I have determined that my dataset adheres to the principles of a tidy dataset. 
+* Each row serves as an individual observation, without any duplicate measurements. 
+* Each column represents a distinct variable, and there are no absent values, as every cell contains data.
+
+```{r}
+### Assessment of tidiness of data
+
+tidy_stat<-glimpse(flow_sample)
+print(tidy_stat)
+
+
+# Check for duplicates in a "year" column
+duplicates <- duplicated(flow_sample$year)
+print(duplicates)
+
+
+# Calculate the total number of missing values in each column
+missing_values <- colSums(is.na(flow_sample))
+# Print missing values
+print(missing_values)
+
+```
+
+
+<!----------------------------------------------------------------------------->
+
+### 2.2 Make the tidy data untidy (4 points)
+
+Now, if your data is tidy, untidy it! Then, tidy it back to it's original state.
+
+If your data is untidy, then tidy it! Then, untidy it back to it's original state.
+
+Be sure to explain your reasoning for this task. Show us the "before" and "after".
+
+<!--------------------------- Start your work below --------------------------->
+
+After all, the tidiness of the data depends upon the intended analysis. Making tidy data untidy or vice versa requires changing shape (dimensions) of data or creating redundancy in data.
+
+Part 1
+
+**The untidy has 15 variables, and the tidy data has 7 variables**
+
+```{r}
+
+## In my flow_sample data, the current tidy format includes years months in one column so that each observation in separate months go into separate rows.
+## To make it untidy, I want to create months  as separate columns and observation will be listed in respective rows. For example, for the month that has no flow measurement, there will be no observation for that month. This will introduce a lot of redundancy because column numbers will increase.
+
+## Make the data wider 
+untidy_flow1 <- flow_sample %>%
+  filter(!is.na(flow)) %>% # Remove the rows which has no flow value
+  pivot_wider(names_from = month,
+              values_from = flow)
+
+# Print the untidy data
+print(untidy_flow1)
+#View(untidy_flow1)
+
+### Make the untidy data tidy
+
+# I use the pivot_longer to make the data tidy 
+# This makes the data longer
+
+tidy_flow1 <- untidy_flow1 %>%
+  pivot_longer(
+    cols = -c(station_id, year, extreme_type, day, sym),
+    names_to = "month", 
+    values_to = "flow",
+    values_drop_na = TRUE
+  )
+
+# Compare tidy data and original data.
+
+print(tidy_flow1)
+#View(tidy_flow1)
+
+# original data
+original_data <- flow_sample %>%
+  filter(!is.na(flow)) 
+
+print(original_data)
+
+
+```
+
+
+Part 2:
+
+**While the column number is same (7), the flow variable (value) was shifted in separate cell, making it difficult to do some statistical analysis.
+
+```{r}
+
+## Make the data wider so that categorical variable extreme_type is widened
+#into two variables based on it level
+# Value comes from the variable flow
+untidy_flow2 <- flow_sample %>%
+  filter(!is.na(flow)) %>%
+  pivot_wider(names_from = extreme_type,
+              values_from = flow)
+
+# Print the untidy data
+print(untidy_flow2)
+#View(untidy_flow2)
+
+### Make the untidy data tidy
+
+# I use the pivot_longer to make the data tidy 
+# This makes the data longer
+
+tidy_flow2 <- untidy_flow2 %>%
+  pivot_longer(
+    cols = -c(station_id, year, month, day, sym),
+    names_to = "extreme_types", 
+    values_to = "flow",
+    values_drop_na = TRUE
+  )
+## Compare the tidy and original data
+print(tidy_flow2)
+
+#View(tidy_flow2)
+
+# original data
+original_data1 <- flow_sample %>%
+filter(!is.na(flow)) 
+
+print(original_data1)
+
+
+```
+
+
+<!----------------------------------------------------------------------------->
+
+## 2.3 Pick Final Research Questions and Explain Your Decision (4 points)
+
+Now, you should be more familiar with your data, and also have made progress in answering your research questions. Based on your interest, and your analyses, pick 2 of the 4 research questions to continue your analysis in the remaining tasks:
+
+<!-------------------------- Start your work below ---------------------------->
+
+
+1. **Q1: Whether there there is statistically significant trend in both extreme minimum, and extreme maximum flow (m3/sec) over the years?**
+
+2.  **Q2: Compare flow pattern among decades:whether there are some decades (say 1970-1980) with unusual extreme min and max flow? Which years had more than average of extreme maximum flow?**
+
+<!----------------------------------------------------------------------------->
+
+Explain your decision for choosing the above two research questions.
+
+<!--------------------------- Start your work below --------------------------->
+**Justification for the Q1**
+
+This is the main question of my data analysis. While previous tasks have been able to partly answer this questions, the statistical analysis of this task is to be done. I chose this question also because answering this question be able to provide insights into my Q3 and Q4 as well.
+
+In this question, I'm interesting in assessing whether there is any statistically discernible pattern in annual extreme_max flow and annual extreme_min flow at one of the station between the years 1909 and 2018.The graphing of the relationship between **flow** and **year** shows slightly increasing trend over the years in extreme_min category, and sightly decreasing trend in the extreme_max category. During my previous analysis, I also noticed variation in above_mean flow and below_mean flow for both categories of extreme flows. Thus, I want to understand how that within category variation is occuring over the years.
+
+**Justification for the Q2**
+
+The answer of the Q3 and Q4 also partly depends on answering this Q2. During my previous exploratory analysis, I found that a lot of inter-decadal heterogeneity in flow in both  extreme categories as reflected by plot2A and plot2B. And It was difficult to detect trend without analysis statistical analysis.
+
+Determining whether there is statistically significant pattern in decade wise flow is crucial because it allows us the understand if there is any cyclic pattern in extreme_max, and extreme_min flow over certain number of decades. This is particularly important in determining  maximum flow over 100 or so years, and calculate flood return period to determine life of engineering structures (e.g., bridges)
+
+Overall, Once answered with proper statistical trend, both questions can allow us make reasonable prediction regarding flow increasing pattern, maximum flood periods, decadal or cyclic patterns in flow.
+
+These pieces of information has a bearing on lots of policy and decision making related to engineering project design, flood control efforts, climate change mitigation efforts.
+
+
+<!----------------------------------------------------------------------------->
+
+Now, try to choose a version of your data that you think will be appropriate to answer these 2 questions. Use between 4 and 8 functions that we've covered so far (i.e. by filtering, cleaning, tidy'ing, dropping irrelevant columns, etc.).
+
+(If it makes more sense, then you can make/pick two versions of your data, one for each research question.) 
+
+<!--------------------------- Start your work below --------------------------->
+
+I have prepared a subset of data to better analyze the questions Q1 and Q2. The dataset I'm using is small with 7 columns and 218 observations, so I don't need to drop any of the observations. While I won't be using all variables, I refrain from dropping variables for now because the dataset is small, and it won't consume much computational power.
+
+
+```{r}
+
+## Flow data for annual Extreme_maximum category
+print(flow_sample2_max)
+
+## Flow data for annual Extreme_minimum category
+print(flow_sample2_min)
+
+```
+
+# Task 3: Modelling
+
+## 3.0 Define the Independent Variable (no points) (no points)
+
+Pick a research question from 1.2, and pick a variable of interest (we'll call it "Y") that's relevant to the research question. Indicate these.
+
+<!-------------------------- Start your work below ---------------------------->
+
+**Research Question**: Whether there there is statistically significant trend in both extreme minimum, and extreme maximum flow (m3/sec) over the years?
+
+**Variable of interest**: 
+
+Response variable: flow (m3/sec)-numeric
+Explanatory variable: year from 1909 to 2018 (integer)
+
+<!----------------------------------------------------------------------------->
+
+## 3.1 Fit the model (3 points)
+
+Fit a model or run a hypothesis test that provides insight on this variable with respect to the research question. Store the model object as a variable, and print its output to screen. We'll omit having to justify your choice, because we don't expect you to know about model specifics in STAT 545.
+
+-   **Note**: It's OK if you don't know how these models/tests work. Here are some examples of things you can do here, but the sky's the limit.
+
+    -   You could fit a model that makes predictions on Y using another variable, by using the `lm()` function.
+    -   You could test whether the mean of Y equals 0 using `t.test()`, or maybe the mean across two groups are different using `t.test()`, or maybe the mean across multiple groups are different using `anova()` (you may have to pivot your data for the latter two).
+    -   You could use `lm()` to test for significance of regression coefficients.
+
+<!-------------------------- Start your work below ---------------------------->
+
+**QUESTION:**  Whether there there is statistically significant trend in both extreme minimum, and extreme maximum flow (m3/sec) over the years?
+
+**Statistical test:** Because my response variable is continuous variable, I used linear regression model approach. I assumed normal distribution. While it is always a best practice to test the normality assumption before proceeding with linear regression, I will not go into detail because this task is more intendend for practice.
+
+
+```{r}
+
+# Extreme_maximum flow category
+# Fit a simple linear regression model to see association between
+# flow and year
+
+#I used I() function to get a meaniningful "interpretable" intercept. It makes the intercept so that the "beginning" of our dataset (1909) corresponds to '0' in the model. This makes all the years in the data set relative to the first year, 1909.
+
+M1 <- lm(flow ~ I(year-1909), data = flow_sample2_max)
+summary(M1)
+
+
+# Extreme_minimum flow category
+
+M2 <- lm(flow ~ I(year-1909), data = flow_sample2_min)
+summary(M2)
+
+
+## visualization for Extreme_maximum
+
+plot_max<-flow_sample2_max %>%
+  ggplot(aes(x=year, y=flow, col=flow_pattern), rm.na=T) +
+  geom_point(position = "jitter", size=2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  xlab("Year") +
+  ylab("Yearly extreme max flow (m^3/sec)")
+
+print(plot_max)
+
+## visualization for Extreme_minimum
+
+plot_min<-flow_sample2_min %>%
+  ggplot(aes(x=year, y=flow, col=flow_pattern), rm.na=T) +
+  geom_point(position = "jitter", size=2) +
+  geom_smooth(method = "lm", se = FALSE) +
+  xlab("Year") +
+  ylab("Yearly extreme min flow (m^3/sec)")
+
+print(plot_min)
+
+```
+
+<!----------------------------------------------------------------------------->
+
+## 3.2  Show results from the fitted models (3 points)
+
+Produce something relevant from your fitted model: either predictions on Y, or a single value like a regression coefficient or a p-value.
+
+-   Be sure to indicate in writing what you chose to produce.
+-   Your code should either output a tibble (in which case you should indicate the column that contains the thing you're looking for), or the thing you're looking for itself.
+-   Obtain your results using the `broom` package if possible. If your model is not compatible with the broom function you're needing, then you can obtain your results by some other means, but first indicate which broom function is not compatible.
+
+<!-------------------------- Start your work below ---------------------------->
+
+**Model Output:**
+
+**Model Interpretation:**
+
+I'm interested in whether the regression coefficient between flow and year is statistically significant. For this, I need to check slope (beta coefficient), standard error, and importantly p-value.
+
+The slope tells us unit change in response variable for 1 unit change in predictor variable (this interpretation is one univariate model in case of linear regression/normal distribution)
+
+The standard error indicates uncertainty in the slope. The higher standard error means that the 95% confidence interval of the slope will overlap with zero, indicating the uncertainty of the relationship between two variables (response variable and predictor variable)
+
+The p value indicates the how believable the null hypothesis is (hypothesized difference of zero), given the observed sample data. Specifically, we assume that the null hypothesis is true or there is no relationship between response (Y) and predictor (X), and the p-value tells us the probability of obtaining an effect at least as large as the one we actually observed in the sample data. 
+
+At first, we need to choose the significance level, which we generally choose 0.05. If the p-values is less than our significance level, then we can reject the null hypothesis. Otherwise, if the p-value is equal to or greater than our significance level, then we fail to reject the null hypothesis. 
+
+I used the **The broom package** to extract various information of my interest (not all relevant ones).
+
+**Main Findings**
+
+1. For extreme_maximum category, there is a statistically significant negative relationship between **flow** and **year** ( slope=-0.374, se=0.185, p-value=0.045). This means there is decreasing trend in annual maximum flow over the years between 1909 and 2018.
+
+2. For extreme_minimum category, there is a statistically significant positive relationship between **flow** and **year** ( slope=0.008, se=0.002, p-value=0.004), but this slope is extremely small. This means there is slightly increasing trend in annual minimum flow over the years between 1909 and 2018.
+
+3. The coefficient of determination for both extreme_maximum category (model1=M1) (R^2=0.036) and extreme_minimum category (model1=M1) (R^2=0.073) is extremely small, meaning that there is a lot of explained variation in the model. The visual depiction corroborates this (plot_max, and plot_min). Thus there could be other factors such as measurement type, month of the year, deforestation in the catchment, day of measurement etc that could explain the variation in the model. Because both models has low R^2, these models are not good models for prediction of flow for other years in the future.
+
+
+```{r}
+
+# Use tidy() function to extract model coefficients, standard errors, and p-values.
+
+## Model 1
+tidy1 <- tidy(M1)
+
+# Extract term, p-value, and coefficients
+results1 <- tidy1 %>% 
+  select(term, p.value, estimate)
+
+# Print the selected results
+print(results1)
+
+
+### Model 2
+
+tidy2 <- tidy(M2)
+
+# Extract term, p-value, and coefficients
+results2 <- tidy2 %>% 
+  select(term, p.value, estimate)
+
+# Print the selected results
+print(results2)
+
+
+##The augment function produces model predictions and residuals.
+
+### Model 1
+
+# Use broom's augment() function to extract model augmentation
+augment1 <- augment(M1)
+print(augment1)
+
+### Model 2
+
+augment2 <-augment(M2)
+print(augment2)
+
+
+#There is another function called glance which can be used to extract summary of model such as goodness of fit measures, p-values for hypothesis tests on residuals, or  model information (AIC, BIC).
+#It produces a tibble with one row.
+
+### Model1
+glance(M1)
+
+### Model2
+glance(M2)
+
+```
+
+<!----------------------------------------------------------------------------->
+
+# Task 4: Reading and writing data
+
+Get set up for this exercise by making a folder called `output` in the top level of your project folder / repository. You'll be saving things there.
+
+
+
+## 4.1 Write a  CSV file in the output folder (3 points)
+
+Take a summary table that you made from Task 1, and write it as a csv file in your `output` folder. Use the `here::here()` function.
+
+-   **Robustness criteria**: You should be able to move your Mini Project repository / project folder to some other location on your computer, or move this very Rmd file to another location within your project repository / folder, and your code should still work.
+-   **Reproducibility criteria**: You should be able to delete the csv file, and remake it simply by knitting this Rmd file.
+
+<!-------------------------- Start your work below ---------------------------->
+```{r}
+summary_table <- summary_stat
+
+#Define the output file path using here::here()
+
+#Write the summary table to a CSV file
+write.csv(summary_table, file = here::here("output/summary_table.csv"))
+
+#Print a message to confirm where the file was saved
+cat("Summary table saved to:", output_file, "\n")
+```
+
+
+<!----------------------------------------------------------------------------->
+
+## 4.2 Save model objects in the folder (3 points)
+
+Write your model object from Task 3 to an R binary file (an RDS), and load it again. Be sure to save the binary file in your `output` folder. Use the functions `saveRDS()` and `readRDS()`.
+
+-   The same robustness and reproducibility criteria as in 4.1 apply here.
+
+<!-------------------------- Start your work below ---------------------------->
+
+
+
+```{r}
+## Model 1 ##
+
+# Save model1 object to an RDS file
+M1_file <- here::here("output", "Model1.rds")
+saveRDS(M1, file = M1_file)
+
+# Print a message to confirm where the file was saved
+cat("Model object saved to:", M1_file, "\n")
+
+# Load the saved model object from the RDS file
+load_model1 <- readRDS(M1_file)
+
+print(load_model1)
+
+
+## Model 2 ## 
+
+# Save model1 object to an RDS file
+M2_file <- here::here("output", "Model2.rds")
+saveRDS(M2, file = M2_file)
+
+# Print a message to confirm where the file was saved
+cat("Model object saved to:", M2_file, "\n")
+
+# Load the saved model object from the RDS file
+load_model2 <- readRDS(M2_file)
+
+print(load_model2)
+```
+
+<!----------------------------------------------------------------------------->
+
+# Overall Reproducibility/Cleanliness/Coherence Checklist 
+
+Here are the criteria we're looking for.
+
+## Coherence (0.5 points)
+
+The document should read sensibly from top to bottom, with no major continuity errors. 
+
+The README file should still satisfy the criteria from the last milestone, i.e. it has been updated to match the changes to the repository made in this milestone. 
+
+## File and folder structure (1 points)
+
+You should have at least three folders in the top level of your repository: one for each milestone, and one output folder. If there are any other folders, these are explained in the main README.
+
+Each milestone document is contained in its respective folder, and nowhere else.
+
+Every level-1 folder (that is, the ones stored in the top level, like "Milestone1" and "output") has a `README` file, explaining in a sentence or two what is in the folder, in plain language (it's enough to say something like "This folder contains the source for Milestone 1").
+
+## Output (1 point)
+
+All output is recent and relevant:
+
+-   All Rmd files have been `knit`ted to their output md files. 
+-   All knitted md files are viewable without errors on Github. Examples of errors: Missing plots, "Sorry about that, but we can't show files that are this big right now" messages, error messages from broken R code
+-   All of these output files are up-to-date -- that is, they haven't fallen behind after the source (Rmd) files have been updated.
+-   There should be no relic output files. For example, if you were knitting an Rmd to html, but then changed the output to be only a markdown file, then the html file is a relic and should be deleted.
+
+Our recommendation: delete all output files, and re-knit each milestone's Rmd file, so that everything is up to date and relevant.
+
+## Tagged release (0.5 point)
+
+You've tagged a release for Milestone 2. 
+
+### Attribution
+
+Thanks to Victor Yuan for mostly putting this together.
