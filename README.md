@@ -1,6 +1,6 @@
-# STAT 545 A: Mini-Data Analysis Project \
+# STAT 545 A: Mini-Data Analysis Project 
 Gopal Khanal \
-2023-10-24\
+2023-10-24 
 
 # Project Information
 This repository contains the files for the Individual Mini Data Analysis Project as a part of course STAT545 A taught in the fall 2023. The project includes two milestones. The purpose of *first* independent Mini Data Analysis Project is to gain familiarity with data manipulation, visulation and basic analysis of research questions using packages such as *ggplot2*, *dplyr* and other within *tidyverse* language. The *second* Mini Data Analysis Project aims to improve understanding of data manipulation and visualization, and analysis and interpretation of data, and generate a reproducible using R Markdown.
