@@ -7,7 +7,7 @@ This repository contains the files for the Individual Mini Data Analysis Project
 
 **There are three folders in this repository, and their description is provided below** 
 
-Folders | Info
+Folders | Description
 --------|-------
 Milestone 1 | This folder contains all the files (R markdown file, knitted github .md file, and folder than contains figures) 
 Milestone 2 |  This folder contains all the files(R markdown file, knitted github .md file, and folder than contains figures) 
