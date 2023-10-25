@@ -3,6 +3,14 @@
 Gopal Khanal\
 2023-10-24
 
+This repository contains files for Mini Data Analysis Project 2 for STAT 545A. The `flow_sample` data available in *datateachr* package was used to learn about manipulating, summarizing, and visualizing the data. The following main four tasks were conducted as a part of this project, and this repository contains all the codes, workflow, and ouputs generated from the project.
+
+- Understand what tidy data is, and how to create it using tidyr.
+- Generate a reproducible and clear report using R Markdown.
+- Manipulating special data types in R: factors and/or dates and times.
+- Fitting a model object to your data, and extract a result.
+- Reading and writing data as separate files.
+
 ### **Mini Data Analysis 2 Files**
 
 -   **mini-project2_README.md:** This is a description of repository of milestone 2
