@@ -568,10 +568,10 @@ and histogram 3 with 50 bin size.
 For this task, I used **flow_sample1A** data because there is good
 amount of variability in the continuous variable **flow** in
 extreme_maxmimum category (range:107 m3/sec-466 m3/sec) whereas the
-exteme_minimum data is too less variable to compare effect of bin width
+extreme_minimum data is too less variable to compare effect of bin width
 on visualization (range: 3.62 m3/sec- 8.44 m3/sec)
 
-Because the \*flow”\*\* ranges from 07 m3/sec to 466 m3/sec, I created
+Because the \*flow”\*\* ranges from 107 m3/sec to 466 m3/sec, I created
 three histograms of different bin sizes (10,30, 100 ). These histograms
 shows the frequency of different magnitudes of flow that occured in 109
 years from 1909-2018.
@@ -652,9 +652,9 @@ I used **flow_sample1A** and **flow_sample1B** data.
 
 **Interesting finding**:
 
-In both extreme_max and extreme_min categories,there are fewer years
-with above_mean flow than below_mean flow. In extreme_max, 47 years had
-the above_mean flow and 62 years ha below_min flow, and in the
+In both *extreme_max* and *extreme_min* categories,there are fewer years
+with *above_mean* flow than *below_mean flow*. In extreme_max, 47 years
+had the above_mean flow and 62 years ha below_min flow, and in the
 extreme_min category, 49 years had the above_mean flow and 58 years had
 below_min flow. From this data, it can be inferred that there are some
 years with unusually high or low flow that is driving the annual
@@ -1139,7 +1139,7 @@ that month, but it untidying will create blank or NA cell value. This
 will introduce a lot of redundancy because column numbers will increase
 as will number of cells without actual observation/value.
 
-**The untidy has 15 variables, and the tidy data has 7 variables**
+**The untidy data has 15 variables, and the tidy data has 7 variables**
 
 ``` r
 ## Make the data wider 
@@ -1229,12 +1229,12 @@ print(original_data)
 
 I’m widening the column numbers. The categorical variable
 **extreme_type** has two levels, so after untidying those two levels
-will now have separate columns and they will be separate variables.
-While the column number is same (7) because the numeric variable flow
-will be distributed into two columns **maximum** and **minimum**. The
-issue with this untidy data is the flow variable (value) was shifted in
-separate cell, and there will be NA’s (when one variable gets value,
-other variable will have NAs) making it difficult to do some statistical
+will now have separate columns and they will be separate variables. The
+column number is same (7) because the numeric variable flow will be
+distributed into two columns **maximum** and **minimum**. The issue with
+this untidy data is the flow variable (value) was shifted in separate
+cell, and there will be NA’s (when one variable gets value, other
+variable will have NAs) making it difficult to do some statistical
 analysis and visualization, and do vector operations, and data
 manipulations for the flow variable.
 
@@ -1449,9 +1449,10 @@ print(flow_sample_max_data)
 ## Flow data for annual Extreme_minimum category
 
 flow_sample_min_data <-flow_sample%>%
+  filter(!is.na(flow)) %>%
   filter(extreme_type =="minimum") %>% # Filtering minimum category
   group_by(station_id)%>% # group by station
-  arrange(year) %>% # arraging by year
+  arrange(year) %>% # arranging by year
   mutate(flow2 = flow-mean(flow), flow_pattern = factor(ifelse(flow > mean(flow), "above_mean", "below_mean"), levels=c("above_mean", "below_mean")), decade = case_when(year < 2020 & year >=2010~ "D11",
      year < 2010 & year>= 2000~ "D10",
      year < 2000 & year>= 1990 ~ "D9",
@@ -1466,21 +1467,21 @@ flow_sample_min_data <-flow_sample%>%
 print(flow_sample_min_data)
 ```
 
-    ## # A tibble: 109 × 10
+    ## # A tibble: 107 × 10
     ## # Groups:   station_id [1]
-    ##    station_id  year extreme_type month   day  flow sym   flow2 flow_pattern
-    ##    <chr>      <dbl> <chr>        <dbl> <dbl> <dbl> <chr> <dbl> <fct>       
-    ##  1 05BB001     1909 minimum         NA    NA NA    <NA>     NA <NA>        
-    ##  2 05BB001     1910 minimum         NA    NA NA    <NA>     NA <NA>        
-    ##  3 05BB001     1911 minimum          2    27  5.75 <NA>     NA <NA>        
-    ##  4 05BB001     1912 minimum          3    14  5.8  <NA>     NA <NA>        
-    ##  5 05BB001     1913 minimum          3    18  6.12 B        NA <NA>        
-    ##  6 05BB001     1914 minimum         11    17  7.16 <NA>     NA <NA>        
-    ##  7 05BB001     1915 minimum          1    27  6.94 <NA>     NA <NA>        
-    ##  8 05BB001     1916 minimum          3     2  6.97 B        NA <NA>        
-    ##  9 05BB001     1917 minimum          2    23  6.06 B        NA <NA>        
-    ## 10 05BB001     1918 minimum          2    20  6.03 B        NA <NA>        
-    ## # ℹ 99 more rows
+    ##    station_id  year extreme_type month   day  flow sym    flow2 flow_pattern
+    ##    <chr>      <dbl> <chr>        <dbl> <dbl> <dbl> <chr>  <dbl> <fct>       
+    ##  1 05BB001     1911 minimum          2    27  5.75 <NA>  -0.524 below_mean  
+    ##  2 05BB001     1912 minimum          3    14  5.8  <NA>  -0.474 below_mean  
+    ##  3 05BB001     1913 minimum          3    18  6.12 B     -0.154 below_mean  
+    ##  4 05BB001     1914 minimum         11    17  7.16 <NA>   0.886 above_mean  
+    ##  5 05BB001     1915 minimum          1    27  6.94 <NA>   0.666 above_mean  
+    ##  6 05BB001     1916 minimum          3     2  6.97 B      0.696 above_mean  
+    ##  7 05BB001     1917 minimum          2    23  6.06 B     -0.214 below_mean  
+    ##  8 05BB001     1918 minimum          2    20  6.03 B     -0.244 below_mean  
+    ##  9 05BB001     1919 minimum          2    28  4.56 B     -1.71  below_mean  
+    ## 10 05BB001     1920 minimum          4     3  5.69 B     -0.584 below_mean  
+    ## # ℹ 97 more rows
     ## # ℹ 1 more variable: decade <chr>
 
 # Task 3: Modelling
@@ -1882,7 +1883,7 @@ write.csv(summary_stat, file = output_file)
 cat("Summary table saved to:", output_file, "\n")
 ```
 
-    ## Summary table saved to: C:/Users/khana/Desktop/PhD/Courses/STAT545/mda-gopalkhanal11/output/summary_table.csv
+    ## Summary table saved to: C:/Users/khana/Desktop/PhD/Courses/STAT545/Gopal-Khanal-Mini-Data-Analysis/output/summary_table.csv
 
 <!----------------------------------------------------------------------------->
 
@@ -1907,7 +1908,7 @@ saveRDS(M1, file = M1_file)
 cat("Model object saved to:", M1_file, "\n")
 ```
 
-    ## Model object saved to: C:/Users/khana/Desktop/PhD/Courses/STAT545/mda-gopalkhanal11/output/Model1.rds
+    ## Model object saved to: C:/Users/khana/Desktop/PhD/Courses/STAT545/Gopal-Khanal-Mini-Data-Analysis/output/Model1.rds
 
 ``` r
 # Load the saved model object from the RDS file
@@ -1941,7 +1942,7 @@ saveRDS(M2, file = M2_file)
 cat("Model object saved to:", M2_file, "\n")
 ```
 
-    ## Model object saved to: C:/Users/khana/Desktop/PhD/Courses/STAT545/mda-gopalkhanal11/output/Model2.rds
+    ## Model object saved to: C:/Users/khana/Desktop/PhD/Courses/STAT545/Gopal-Khanal-Mini-Data-Analysis/output/Model2.rds
 
 ``` r
 # Load the saved model object from the RDS file

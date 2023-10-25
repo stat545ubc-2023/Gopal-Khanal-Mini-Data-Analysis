@@ -347,9 +347,9 @@ Therefore, I chose the flow (continuous variable) to plot histograms with differ
 
 Because the flow variable is numeric with repeated values have limited difference in magnitude, I think the small bin size (histogram no 1 with 10 unit bin size) would be better than the histogram 2 with 30 bin size and histogram 3 with 50 bin size. 
 
-For this task, I used **flow_sample1A** data because there is good amount of variability in the continuous variable **flow** in extreme_maxmimum category (range:107 m3/sec-466 m3/sec) whereas the exteme_minimum data is too less variable to compare effect of bin width on visualization (range: 3.62 m3/sec- 8.44 m3/sec)
+For this task, I used **flow_sample1A** data because there is good amount of variability in the continuous variable **flow** in extreme_maxmimum category (range:107 m3/sec-466 m3/sec) whereas the extreme_minimum data is too less variable to compare effect of bin width on visualization (range: 3.62 m3/sec- 8.44 m3/sec)
 
-Because the *flow"** ranges from 07 m3/sec to 466 m3/sec, I created three histograms of different bin sizes (10,30, 100 ). These histograms shows the frequency of different magnitudes of flow that occured in 109 years from 1909-2018.
+Because the *flow"** ranges from 107 m3/sec to 466 m3/sec, I created three histograms of different bin sizes (10,30, 100 ). These histograms shows the frequency of different magnitudes of flow that occured in 109 years from 1909-2018.
 
 Out of three bin sizes, I found the bin size of 20 is most appealing as well as informative to visualize the frequency of flow.  In 100 bin width, much of the information is lost, because the region of flow between 150m3/sec-250 m3/sec is not well represented, whereas using too small bin size of 5 will show much clutter and doesn't look intuitive enough to visualize and extract information. The bin width of 20 looks a good compromise.
 
@@ -413,7 +413,7 @@ I used **flow_sample1A** and **flow_sample1B** data.
 
 **Interesting finding**: 
 
-In both extreme_max and extreme_min categories,there are fewer years with above_mean flow than below_mean flow. In extreme_max, 47 years had the above_mean flow  and 62 years ha below_min flow, and in the extreme_min category, 49 years had the above_mean flow  and 58 years had below_min flow. From this data, it can be inferred that there are some years with unusually high or low flow that is driving the annual fluctuations in flow over the years. For example, the year 2013 had unusually high flow in the *extreme_max* category (466 m3/sec), and 1932 had low  flow in *extreme_min* category (3.62 m3/sec). But important thing to note here is that **flow (m3/sec)** less variable across years in extreme_min category than extreme_max category as indicated by their coefficient of variation.
+In both *extreme_max* and *extreme_min* categories,there are fewer years with *above_mean* flow than *below_mean flow*. In extreme_max, 47 years had the above_mean flow  and 62 years ha below_min flow, and in the extreme_min category, 49 years had the above_mean flow  and 58 years had below_min flow. From this data, it can be inferred that there are some years with unusually high or low flow that is driving the annual fluctuations in flow over the years. For example, the year 2013 had unusually high flow in the *extreme_max* category (466 m3/sec), and 1932 had low  flow in *extreme_min* category (3.62 m3/sec). But important thing to note here is that **flow (m3/sec)** less variable across years in extreme_min category than extreme_max category as indicated by their coefficient of variation.
 
 It would be interesting to explore with which years are those that have above average flows.
 
@@ -661,7 +661,7 @@ My **flow_sample** was mostly tidy for my purpose of analysis. So I'm making it 
 
 To make it untidy, I want to create months as separate columns and observation will be listed in respective rows. For example, for the month that has no flow measurement, there will be no observation for that month, but it untidying will create blank or NA cell value. This will introduce a lot of redundancy because column numbers will increase as will number of cells without actual observation/value.
 
-**The untidy has 15 variables, and the tidy data has 7 variables**
+**The untidy data has 15 variables, and the tidy data has 7 variables**
 
 ```{r}
 
@@ -705,7 +705,7 @@ print(original_data)
 
 **Part 2:**
 
-I'm widening the column numbers. The categorical variable **extreme_type** has two levels, so after untidying those two levels will now have separate columns and they will be separate variables. While the column number is same (7) because the numeric variable flow will be distributed into two columns **maximum** and **minimum**.  The issue with this untidy data is the flow variable (value) was shifted in separate cell, and there will be NA's (when one variable gets value, other variable will have NAs) making it difficult to do some statistical analysis and visualization, and do vector operations, and data manipulations for the flow variable.
+I'm widening the column numbers. The categorical variable **extreme_type** has two levels, so after untidying those two levels will now have separate columns and they will be separate variables. The column number is same (7) because the numeric variable flow will be distributed into two columns **maximum** and **minimum**.  The issue with this untidy data is the flow variable (value) was shifted in separate cell, and there will be NA's (when one variable gets value, other variable will have NAs) making it difficult to do some statistical analysis and visualization, and do vector operations, and data manipulations for the flow variable.
 
 ```{r}
 
@@ -817,9 +817,10 @@ print(flow_sample_max_data)
 ## Flow data for annual Extreme_minimum category
 
 flow_sample_min_data <-flow_sample%>%
+  filter(!is.na(flow)) %>%
   filter(extreme_type =="minimum") %>% # Filtering minimum category
   group_by(station_id)%>% # group by station
-  arrange(year) %>% # arraging by year
+  arrange(year) %>% # arranging by year
   mutate(flow2 = flow-mean(flow), flow_pattern = factor(ifelse(flow > mean(flow), "above_mean", "below_mean"), levels=c("above_mean", "below_mean")), decade = case_when(year < 2020 & year >=2010~ "D11",
      year < 2010 & year>= 2000~ "D10",
      year < 2000 & year>= 1990 ~ "D9",
