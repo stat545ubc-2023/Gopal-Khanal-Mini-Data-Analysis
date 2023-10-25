@@ -3,14 +3,14 @@ Gopal Khanal \
 2023-10-24 
 
 # Project Information
-This repository contains the files for the Individual Mini Data Analysis Project as a part of course STAT545 A taught in the fall 2023. The project includes two milestones. The purpose of *first* independent Mini Data Analysis Project is to gain familiarity with data manipulation, visulation and basic analysis of research questions using packages such as *ggplot2*, *dplyr* and other within *tidyverse* language. The *second* Mini Data Analysis Project aims to improve understanding of data manipulation and visualization, and analysis and interpretation of data, and generate a reproducible using R Markdown.
+This repository contains the files for the Individual Mini Data Analysis Project as a part of course STAT545 A taught in the fall 2023. The project includes two milestones. The purpose of *first* independent Mini Data Analysis Project is to gain familiarity with data manipulation, visulation and basic analysis of research questions using packages such as *ggplot2*, *dplyr* and other within *tidyverse* language. The *second* Mini Data Analysis Project aims to improve understanding of data manipulation and visualization, and analysis and interpretation of data, and generate a reproducible using R Markdown. The `flow_sample` data available in package *datateachr* was used for this project.
 
 **There are three folders in this repository, and their description is provided below** 
 
 Folders | Info
 --------|-------
-Milestone 1 | This folder contains all the files (R markdown file, knitted github .md file, and folder than contains figures) from Milestone 1
-Milestone 2 |  This folder contains all the files(R markdown file, knitted github .md file, and folder than contains figures) from Milestone 2
+Milestone 1 | This folder contains all the files (R markdown file, knitted github .md file, and folder than contains figures) 
+Milestone 2 |  This folder contains all the files(R markdown file, knitted github .md file, and folder than contains figures) 
 output | This folder contains the output (csv file, R objects) from Milestone 2 (task 4)
 
 ## **Mini Data Analysis 1**
@@ -43,7 +43,7 @@ The mini data analysis 2 included four main tasks:
 -   **mini-project2.Rmd:** This is the R markdown file for milestone 2 with all codes and tasks
 -   **mini-project2.md:** This is a knitted github document that includes all task completed for milestone 2 
 -   **mini-project-2_files:** This folder contains all the figures generated from milestone 2
--   
+  
 
 # Accesss of the project contents and run the codes in your repository
 -   You can view the outputs of both milestones by clicking on respective knitted github documents. 
