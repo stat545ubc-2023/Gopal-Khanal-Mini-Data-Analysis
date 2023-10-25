@@ -9,9 +9,9 @@ This repository contains the files for the Individual Mini Data Analysis Project
 
 Folders | Description
 --------|-------
-Milestone 1 | This folder contains all the files (R markdown file, knitted github .md file, and folder than contains figures) 
-Milestone 2 |  This folder contains all the files(R markdown file, knitted github .md file, and folder than contains figures) 
-output | This folder contains the output (csv file, R objects) from Milestone 2 (task 4)
+Milestone 1  | This folder contains all the files of Mini Data Analysis 1 (R markdown file, knitted github .md file, and folder than contains figures). 
+Milestone 2  |  This folder contains all the files of Mini Data Analysis 2 (R markdown file, knitted github .md file, and folder than contains figures). 
+output       | This folder contains the output (csv file, R objects) from Milestone 2 (task 4)
 
 ## **Mini Data Analysis 1**
 
@@ -46,7 +46,8 @@ The mini data analysis 2 included four main tasks:
   
 
 # Accesss of the project contents and run the codes in your repository
--   You can view the outputs of both milestones by clicking on respective knitted github documents. 
--   You can download the zip file by clicking the "\< \> Code" button in the upper right-hand corner and then "Download ZIP" option, and work in your local PC as you want.
--   You can also create a new project in RStudio by selecting "Version Control" option then pasting the github repository URL in -\> "Git" (clone a project from a Git repository) -\>. You can then save the cloned project in your local folder.  You can pull the main branch of the repository to your pc. You can make necessary changes, suggestions, and commit and push the committs to the online github repo.
+-   You can view the outputs of both milestones by clicking on respective knitted github documents (mini-project2.md, and mini-project1.md). 
+-   You can download the zip file by clicking the "\< \> Code" button in the upper right-hand corner and then go to "Download ZIP" option, and work in your local PC as 
+    you want.
+-   You can also create a new project in RStudio by selecting "Version Control" option, and then pasting the github repository URL in -\> "Git" (clone a project from a Git repository) -\>. You can then save the cloned project in your local folder.  You can pull the main branch of the repository to your pc. You can make necessary changes, suggestions, and commit and push the committs to the online github repo.
   
